@@ -361,6 +361,7 @@
   canvas.addEventListener('wheel', e => {
     e.preventDefault();
     fov = Math.max(0.62, Math.min(1.85, fov * Math.exp(e.deltaY * 0.0012)));
+    needsDraw = true;
   }, { passive: false });
 
   // Two fingers to zoom, matching the wheel.
@@ -379,6 +380,7 @@
       const [a, b] = [...touches.values()];
       const d = Math.hypot(a.x - b.x, a.y - b.y);
       fov = Math.max(0.62, Math.min(1.85, pinching.fov * pinching.d / Math.max(1, d)));
+      needsDraw = true;
     }
   }, { passive: true });
 
