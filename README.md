@@ -25,8 +25,9 @@ direction — nothing is a dead end.
 
 - **Notes** — opens the longer description of the current room.
 - **Full screen** — hides the interface and leaves only the house.
-- **Download** — saves the current view at full resolution. In the 360° tour this is
-  the whole equirectangular panorama, so it can be viewed in any panorama player.
+- **Download** — saves the current view: the still at 2000×1250, or in the 360° tour
+  the whole 4096×2048 equirectangular panorama, which any panorama player will open.
+  Both are the same files the page displays, so nothing extra is fetched.
 - **Hide** — clears the interface without going full screen.
 - **فا / EN** — switches the interface between English and Persian. The Persian face
   is Vazirmatn, self-hosted, and the layout mirrors properly rather than only
@@ -48,9 +49,8 @@ index.html  styles.css  panorama.css      the two modes and their chrome
 tour.js                                   the stills tour
 panorama.js                               the 360° viewer and its WebGL renderer
 plan.js                                   the floor plan, hotspot bearings, arrival angles
-images/                                   the nine stills
-panoramas/                                the fourteen web panoramas (4096x2048 JPEG)
-interiors/                                full-resolution PNGs, for the Download buttons
+images/                                   the nine stills (2000x1250 JPEG)
+panoramas/                                the fourteen panoramas (4096x2048 JPEG)
 ```
 
 The renderer is self-contained WebGL with no CDN or library dependency, and the

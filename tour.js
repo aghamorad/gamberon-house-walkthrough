@@ -410,7 +410,7 @@ function paint(room) {
     active.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
   }
 
-  btnSave.href = 'interiors/' + room.slug + '.png';
+  btnSave.href = 'images/' + room.slug + '.jpg';
   btnSave.setAttribute('download', room.slug + '.png');
   document.title = UI[lang].docTitle + ' · ' + copy.name;
 

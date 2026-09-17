@@ -553,8 +553,8 @@
       li.textContent = p;
       elPoints.appendChild(li);
     });
-    btnSave.href = 'interiors/panoramas/' + (room.from || room.slug) + '.png';
-    btnSave.setAttribute('download', room.slug + '.png');
+    btnSave.href = 'panoramas/' + (room.from || room.slug) + '.jpg';
+    btnSave.setAttribute('download', room.slug + '.jpg');
     document.title = (lang === 'fa' ? 'خانهٔ گمبرون' : 'Gamberon House') + ' · ' + copy.name;
     drawMap();
   }
