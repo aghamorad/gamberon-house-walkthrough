@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gamberon House — Interior Walkthrough</title>
+<meta name="description" content="A room-by-room walkthrough of a completed house, rendered in Cycles.">
+<meta property="og:title" content="Gamberon House — Interior Walkthrough">
+<meta property="og:description" content="A room-by-room walkthrough of a completed house, rendered in Cycles.">
+<meta property="og:image" content="images/01-home-overview.jpg">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="panorama.css">
+</head>
+<body>
+
+<div class="stage">
+  <img class="layer" id="layerA" alt="">
+  <img class="layer" id="layerB" alt="">
+  <div class="scrim"></div>
+</div>
+
+<header class="bar-top">
+  <div class="brand">
+    <span class="brand-mark">Gamberon</span>
+    <span class="brand-sub" id="brandSub">Interior walkthrough</span>
+  </div>
+  <div class="tools">
+    <button class="tool" id="btnInfo" aria-pressed="false" title="Talking points (I)">Notes</button>
+    <button class="tool" id="btnFull" title="Full screen (F)">Full screen</button>
+    <a class="tool" id="btnSave" download title="Download this view at full resolution">Download</a>
+    <button class="tool" id="btnHide" title="Hide the interface (H)">Hide</button>
+    <button class="tool" id="btnLang" lang="fa" title="زبان / Language">فارسی</button>
+  </div>
+</header>
+
+<button class="arrow prev" id="btnPrev" aria-label="Previous room">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8"/></svg>
+</button>
+<button class="arrow next" id="btnNext" aria-label="Next room">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8"/></svg>
+</button>
+
+<div class="caption" id="caption">
+  <div class="caption-head">
+    <span class="room-num" id="roomNum">01</span>
+    <h1 class="room-name" id="roomName"></h1>
+  </div>
+  <p class="room-note" id="roomNote"></p>
+  <div class="notes" id="notes">
+    <p class="room-detail" id="roomDetail"></p>
+    <ul class="points" id="roomPoints"></ul>
+  </div>
+</div>
+
+<nav class="rail" id="rail" aria-label="Rooms"></nav>
+
+<div class="hint" id="hint">Use ← → or the arrows to walk through the house</div>
+
+<div class="loader" id="loader"><span></span></div>
+
+<script src="plan.js"></script>
+<script src="panorama.js"></script>
+<script src="tour.js"></script>
+</body>
+</html>

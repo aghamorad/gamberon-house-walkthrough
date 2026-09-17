@@ -1,0 +1,449 @@
+:root {
+  --ink: #f4f1ec;
+  --dim: rgba(244, 241, 236, 0.66);
+  --accent: #d8c3a2;
+  --glass: rgba(18, 17, 16, 0.55);
+  --edge: rgba(255, 255, 255, 0.16);
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #0b0b0c;
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ---------- image stage ---------- */
+
+.stage { position: fixed; inset: 0; background: #0b0b0c; cursor: pointer; }
+
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 900ms var(--ease);
+  will-change: opacity;
+}
+
+.layer.on { opacity: 1; }
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to top, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.34) 22%, rgba(0, 0, 0, 0) 46%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 18%);
+  transition: opacity 400ms var(--ease);
+}
+
+/* ---------- top bar ---------- */
+
+.bar-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: max(20px, env(safe-area-inset-top)) 26px 0;
+  transition: opacity 400ms var(--ease), transform 400ms var(--ease);
+}
+
+.brand { line-height: 1.15; text-shadow: 0 1px 24px rgba(0, 0, 0, 0.7); }
+
+.brand-mark {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(19px, 2.1vw, 26px);
+  letter-spacing: 0.01em;
+}
+
+.brand-sub {
+  display: block;
+  margin-top: 3px;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.tools { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+.tool {
+  appearance: none;
+  border: 1px solid var(--edge);
+  background: var(--glass);
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  color: var(--ink);
+  font: inherit;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 8px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 200ms, border-color 200ms, color 200ms;
+}
+
+.tool:hover { background: rgba(40, 38, 35, 0.72); border-color: rgba(255, 255, 255, 0.3); }
+.tool[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #16140f; }
+
+/* ---------- arrows ---------- */
+
+.arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: var(--ink);
+  cursor: pointer;
+  padding: 0;
+  transition: background 220ms, border-color 220ms, opacity 400ms var(--ease), transform 400ms var(--ease);
+}
+
+.arrow:hover { background: rgba(48, 45, 41, 0.8); border-color: rgba(255, 255, 255, 0.34); }
+.arrow svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.arrow.prev { left: 26px; }
+.arrow.next { right: 26px; }
+
+/* ---------- caption ---------- */
+
+/* The caption grows upward from the bottom, so with the notes open on a short
+   window it reaches the vertically centred arrows. Insetting it past the arrow
+   column separates them horizontally, which holds at any caption height. */
+
+.caption {
+  position: fixed;
+  left: 96px;
+  bottom: 92px;
+  max-width: min(560px, 52vw);
+  transition: opacity 400ms var(--ease), transform 400ms var(--ease);
+}
+
+.caption-head { display: flex; align-items: baseline; gap: 13px; }
+
+.room-num {
+  font-size: 11.5px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.room-name {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  font-size: clamp(25px, 3.3vw, 42px);
+  letter-spacing: -0.005em;
+  line-height: 1.06;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.72);
+}
+
+.room-note {
+  margin: 9px 0 0;
+  font-size: clamp(14px, 1.15vw, 15.5px);
+  line-height: 1.55;
+  color: rgba(244, 241, 236, 0.92);
+  text-shadow: 0 1px 20px rgba(0, 0, 0, 0.8);
+  max-width: 46ch;
+}
+
+.notes {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 480ms var(--ease), opacity 320ms var(--ease), margin-top 480ms var(--ease);
+}
+
+.notes.open { max-height: 420px; overflow-y: auto; opacity: 1; margin-top: 14px; }
+
+.room-detail {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--dim);
+  text-shadow: 0 1px 18px rgba(0, 0, 0, 0.8);
+  max-width: 50ch;
+}
+
+.points { margin: 0; padding: 0; list-style: none; max-width: 50ch; }
+
+.points li {
+  position: relative;
+  padding-left: 17px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--dim);
+  text-shadow: 0 1px 18px rgba(0, 0, 0, 0.8);
+}
+
+.points li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 8px;
+  width: 5px;
+  height: 1px;
+  background: var(--accent);
+}
+
+/* ---------- room rail ---------- */
+
+/* Centring an overflowing flex row clips the leading chips off the scrollable
+   area for good — they cannot be scrolled back into reach. Auto margins on the
+   end children centre the group while it fits and scroll freely once it does
+   not, which is what the active chip needs to stay visible. */
+
+.rail {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  padding: 14px 20px max(18px, env(safe-area-inset-bottom));
+  overflow-x: auto;
+  scrollbar-width: none;
+  transition: opacity 400ms var(--ease), transform 400ms var(--ease);
+}
+
+.rail::-webkit-scrollbar { display: none; }
+
+.chip:first-child { margin-inline-start: auto; }
+.chip:last-child { margin-inline-end: auto; }
+
+.chip {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--dim);
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 7px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 200ms, background 200ms;
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.8);
+}
+
+.chip:hover { color: var(--ink); background: rgba(255, 255, 255, 0.07); }
+.chip[aria-current="true"] { color: var(--ink); background: rgba(255, 255, 255, 0.13); }
+.chip[aria-current="true"]::after {
+  content: "";
+  display: block;
+  height: 1px;
+  margin-top: 5px;
+  background: var(--accent);
+}
+
+/* ---------- misc ---------- */
+
+.hint {
+  position: fixed;
+  left: 50%;
+  bottom: 50%;
+  transform: translate(-50%, 50%);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--edge);
+  padding: 10px 18px;
+  border-radius: 999px;
+  pointer-events: none;
+  transition: opacity 700ms var(--ease);
+}
+
+.hint.gone { opacity: 0; }
+
+.loader {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #0b0b0c;
+  transition: opacity 500ms var(--ease);
+  z-index: 5;
+}
+
+.loader.gone { opacity: 0; pointer-events: none; }
+
+.loader span {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* interface hidden */
+
+body.bare .caption,
+body.bare .rail,
+body.bare .bar-top,
+body.bare .arrow { opacity: 0; pointer-events: none; }
+body.bare .arrow.prev { transform: translate(-14px, -50%); }
+body.bare .arrow.next { transform: translate(14px, -50%); }
+body.bare .scrim { opacity: 0; }
+
+/* ---------- Persian ---------- */
+
+/* Self-hosted rather than linked from a CDN: GitHub Pages is the host, Iranian
+   readers are the audience, and a font request that never resolves would drop
+   the page onto a system fallback mid-sentence. */
+
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("fonts/Vazirmatn-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("fonts/Vazirmatn-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Letter-spacing has to go in Arabic script: it breaks the cursive joins and
+   leaves every word looking unset. The serif display face is dropped too —
+   Georgia carries no Arabic glyphs at all and would silently fall back. */
+
+body.lang-fa {
+  font-family: "Vazirmatn", "IRANSansX", "Vazir", Tahoma, "Geeza Pro", "Noto Naskh Arabic", system-ui, sans-serif;
+}
+
+body.lang-fa .brand-mark,
+body.lang-fa .room-name {
+  font-family: inherit;
+  font-weight: 500;
+}
+
+body.lang-fa .brand-sub,
+body.lang-fa .tool,
+body.lang-fa .chip,
+body.lang-fa .hint,
+body.lang-fa .room-num {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+body.lang-fa .brand-sub { font-size: 12.5px; }
+body.lang-fa .tool { font-size: 12.5px; }
+body.lang-fa .chip { font-size: 12.5px; }
+body.lang-fa .hint { font-size: 13px; }
+body.lang-fa .room-num { font-size: 12.5px; }
+
+body.lang-fa .room-name {
+  font-size: clamp(24px, 3vw, 38px);
+  line-height: 1.4;
+}
+
+body.lang-fa .room-note,
+body.lang-fa .room-detail,
+body.lang-fa .points li {
+  line-height: 1.85;
+}
+
+body.lang-fa .caption {
+  left: auto;
+  right: 96px;
+  text-align: right;
+}
+
+body.lang-fa .points li {
+  padding-left: 0;
+  padding-right: 17px;
+}
+
+body.lang-fa .points li::before { left: auto; right: 2px; }
+
+body.lang-fa .arrow.prev { left: auto; right: 26px; }
+body.lang-fa .arrow.next { right: auto; left: 26px; }
+
+/* Moving the buttons is not enough: the chevrons are fixed SVG paths, so without
+   mirroring them the forward button points backwards. Reading runs right to left,
+   so forward means leftward and back means rightward. */
+
+body.lang-fa .arrow svg { transform: scaleX(-1); }
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 860px) {
+  .bar-top { padding: max(14px, env(safe-area-inset-top)) 16px 0; }
+  .tools .tool { padding: 7px 10px; font-size: 10.5px; }
+  .caption { left: 58px; right: 58px; bottom: 82px; max-width: none; }
+  .room-note { max-width: none; }
+  .arrow { width: 44px; height: 44px; }
+  .arrow.prev { left: 10px; }
+  .arrow.next { right: 10px; }
+  .rail { justify-content: flex-start; padding-left: 14px; padding-right: 14px; }
+  .notes.open { max-height: 46vh; overflow-y: auto; }
+}
+
+/* A phone header is one line or it is three. The strapline is long enough to
+   wrap, and once it does the brand column takes a third of the width and the
+   pills are pushed into three rows below it. The name still says what the page
+   is; the strapline is the part that goes. */
+@media (max-width: 720px) {
+  .brand-sub { display: none; }
+  .tools { gap: 6px; }
+  .tools .tool { padding: 6px 9px; font-size: 10px; }
+}
+
+@media (max-height: 520px) {
+  .caption { bottom: 70px; }
+  .room-name { font-size: 22px; }
+  .notes.open { max-height: 30vh; overflow-y: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layer, .caption, .rail, .bar-top, .arrow, .notes, .hint, .loader { transition-duration: 1ms; }
+  .loader span { animation: none; }
+}
+
+/* Persian, small screens: the desktop RTL rules have the higher specificity, so
+   the mirrored caption and arrows need restating at the closer insets. */
+
+@media (max-width: 860px) {
+  body.lang-fa .caption { left: 58px; right: 58px; text-align: right; }
+  body.lang-fa .arrow.prev { left: auto; right: 10px; }
+  body.lang-fa .arrow.next { right: auto; left: 10px; }
+}

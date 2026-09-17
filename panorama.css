@@ -1,0 +1,295 @@
+/* Gamberon House — the 360 degree tour.
+   Loaded after styles.css, so everything here is the stills tour's own
+   vocabulary (--ink, --glass, --accent, --ease) applied to a mode that was not
+   there when that sheet was written. Nothing below is visible until
+   body.pano-open is set, so the photographs are untouched by it. */
+
+/* ---------- the view ---------- */
+
+#pano {
+  position: fixed;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #0b0b0c;
+  cursor: grab;
+  touch-action: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 700ms var(--ease);
+  z-index: 1;
+}
+
+body.pano-open #pano { opacity: 1; pointer-events: auto; }
+#pano.grabbing { cursor: grabbing; }
+
+/* The photographs stay in the DOM — switching back should not reload them. */
+body.pano-open .stage { opacity: 0; pointer-events: none; transition: opacity 500ms var(--ease); }
+body.pano-open .caption,
+body.pano-open .rail,
+body.pano-open .bar-top { z-index: 6; }
+
+/* ---------- markers for the rooms you can walk to ---------- */
+
+.pano-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 500ms var(--ease);
+  z-index: 3;
+}
+
+body.pano-open .pano-overlay.has-any { opacity: 1; }
+
+.hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  padding: 10px;
+  appearance: none;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: opacity 220ms linear;
+}
+
+.hotspot-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: rgba(18, 17, 16, 0.4);
+  box-shadow: 0 0 0 7px rgba(216, 195, 162, 0.12), 0 2px 14px rgba(0, 0, 0, 0.55);
+  transition: background 200ms, transform 200ms var(--ease), box-shadow 200ms;
+}
+
+.hotspot-label {
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--glass);
+  border: 1px solid var(--edge);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.85);
+}
+
+.hotspot:hover .hotspot-dot,
+.hotspot:focus-visible .hotspot-dot {
+  background: var(--accent);
+  transform: scale(1.3);
+  box-shadow: 0 0 0 9px rgba(216, 195, 162, 0.18), 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+
+.hotspot:hover .hotspot-label,
+.hotspot:focus-visible .hotspot-label { background: rgba(42, 39, 35, 0.82); }
+
+/* Pinned to the edge of the frame: the room is behind you. Smaller and dimmer,
+   so it reads as a direction to turn rather than as something in the view. */
+.hotspot.off { opacity: 0.5; }
+.hotspot.off .hotspot-dot { width: 9px; height: 9px; box-shadow: none; }
+.hotspot.off .hotspot-label { font-size: 9.5px; padding: 3px 8px; }
+.hotspot.off:hover, .hotspot.off:focus-visible { opacity: 1; }
+
+/* ---------- the plan ---------- */
+
+/* Bottom right when reading left to right, bottom left in Persian: the caption
+   takes the opposite corner, and physical left/right are not mirrored by
+   dir="rtl", so the swap is written out. */
+
+.minimap {
+  position: fixed;
+  right: 24px;
+  bottom: 96px;
+  width: 176px;
+  height: 208px;
+  padding: 9px;
+  border: 1px solid var(--edge);
+  border-radius: 14px;
+  background: rgba(12, 12, 13, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms var(--ease);
+  z-index: 4;
+}
+
+body.lang-fa .minimap { right: auto; left: 24px; }
+body.pano-open .minimap { opacity: 1; pointer-events: auto; }
+
+.minimap svg { display: block; width: 100%; height: 100%; }
+
+.map-floor rect { fill: rgba(244, 241, 236, 0.13); }
+.map-dot { fill: rgba(244, 241, 236, 0.62); cursor: pointer; transition: fill 180ms; }
+.map-dot:hover { fill: var(--ink); }
+.map-dot.current { fill: var(--accent); cursor: default; }
+.map-dot.other-level { fill: rgba(244, 241, 236, 0.15); pointer-events: none; }
+.map-cone { fill: rgba(216, 195, 162, 0.3); pointer-events: none; }
+
+/* ---------- a room arriving ---------- */
+
+.pano-busy {
+  position: fixed;
+  left: 50%;
+  bottom: 76px;
+  width: 46px;
+  height: 2px;
+  margin-left: -23px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.13);
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 260ms var(--ease);
+  z-index: 4;
+}
+
+.pano-busy.on { opacity: 1; }
+
+.pano-busy::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 42%;
+  border-radius: 2px;
+  background: var(--accent);
+  animation: panoslide 1150ms var(--ease) infinite;
+}
+
+@keyframes panoslide {
+  0% { transform: translateX(-115%); }
+  100% { transform: translateX(265%); }
+}
+
+/* ---------- the thumb pad ---------- */
+
+/* Only built where there is a finger to press it with: a mouse already has the
+   wheel and the arrow keys, and a controller on a desktop would be clutter.
+   Hidden by default and revealed by the query below, so a device that reports
+   both a touchscreen and a mouse gets it — which is the right way round. */
+
+.pano-pad {
+  position: fixed;
+  left: 22px;
+  bottom: 96px;
+  width: 132px;
+  height: 132px;
+  display: none;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  align-items: center;
+  justify-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--edge);
+  background: rgba(12, 12, 13, 0.34);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms var(--ease);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 7;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .pano-pad { display: grid; }
+}
+
+body.lang-fa .pano-pad { left: auto; right: 22px; }
+body.pano-open .pano-pad { opacity: 1; pointer-events: auto; }
+
+.pad-key {
+  appearance: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 160ms, color 160ms;
+}
+
+.pad-key svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pad-key.on { background: var(--accent); color: #16140f; }
+
+/* The centre of the ring reads as a control rather than as four loose arrows. */
+.pano-pad::after {
+  content: "";
+  grid-area: 2 / 2;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(244, 241, 236, 0.28);
+}
+
+.pad-left  { grid-area: 2 / 1; }
+.pad-right { grid-area: 2 / 3; }
+.pad-up    { grid-area: 1 / 2; }
+.pad-down  { grid-area: 3 / 2; }
+
+/* ---------- hidden along with the rest of the interface ---------- */
+
+body.bare .minimap,
+body.bare .pano-pad,
+body.bare .pano-overlay,
+body.bare .pano-busy { opacity: 0; pointer-events: none; }
+
+/* ---------- Persian ---------- */
+
+body.lang-fa .hotspot-label {
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 11.5px;
+}
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 720px) {
+  .minimap { width: 118px; height: 142px; right: 14px; bottom: 88px; }
+  body.lang-fa .minimap { left: 14px; }
+  .hotspot-label { font-size: 9.5px; letter-spacing: 0.1em; padding: 3px 8px; }
+  body.lang-fa .hotspot-label { font-size: 10.5px; }
+  .pano-busy { bottom: 68px; }
+
+  .pano-pad { left: 14px; bottom: 84px; width: 116px; height: 116px; }
+  body.lang-fa .pano-pad { left: auto; right: 14px; }
+
+  /* The pad and the plan own the two lower corners on a phone, and at the
+     wider caption insets they would be sitting on the room's name. So in 360°
+     mode the caption lifts clear of them and runs the full width instead. The
+     photographs keep the caption where they have always had it. */
+  body.pano-open .caption { left: 14px; right: 14px; bottom: 244px; }
+}
+
+@media (max-height: 520px) {
+  .minimap { display: none; }
+}
